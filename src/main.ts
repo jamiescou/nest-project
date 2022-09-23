@@ -5,10 +5,17 @@ import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import * as path from 'path';
+// import * as helmet from 'helmet';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const helmet = require('helmet');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const rateLimit = require('express-rate-limit');
+// import * as rateLimit from 'express-rate-limit';
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    cors: true,
+  });
   app.setGlobalPrefix('api'); // 全局路由前缀
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new TransformInterceptor());
@@ -17,6 +24,13 @@ async function bootstrap() {
   // app.useStaticAssets(path.join(__dirname, '..', 'public'), {
   //   prefix: '/public/',
   // });
+  app.use(helmet());
+  app.use(
+    rateLimit({
+      windowMs: 10 * 60 * 1000, // 10 minutes
+      max: 50, // limit each IP to 100 requests per windowMs
+    }),
+  );
   app.useStaticAssets('public', {
     prefix: '/storage/',
   });

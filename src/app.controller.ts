@@ -10,6 +10,7 @@ import {
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AppService } from './app.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import * as path from 'path';
 
 export const ApiFile =
   (fileName = 'file'): MethodDecorator =>
@@ -31,20 +32,22 @@ export const ApiFile =
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  // @Get('pages')
-  // @Render('pc/index')
-  // getPages() {
-  //   return {
-  //     name: 'pc端页面',
-  //   };
-  // }
-
   @Post('upload')
   @ApiOperation({ summary: '上传文件' })
   @ApiConsumes('multipart/form-data')
   @ApiFile()
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile('file') file: any): Promise<any> {
-    console.log('0000', file);
+    // const fileSuffixs = path.extname(file.originalname);
+    // console.log('fileSuffixs==>>', fileSuffixs);
+    const fileSuffixStr = file.originalname.split('.');
+    const fileSuffix = fileSuffixStr[fileSuffixStr.length - 1];
+    const fileName = file.originalname.substr(
+      0,
+      file.originalname.indexOf(fileSuffix) - 1,
+    );
+    console.log('fileName11==>', file.originalname);
+    const size = (file.size / 1024 / 1024).toFixed(1);
+    return this.appService.upload(file, { fileName, size, fileSuffix });
   }
 }
