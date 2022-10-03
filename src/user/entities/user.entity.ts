@@ -20,7 +20,7 @@ export class User {
 
   @Column({ length: 100, nullable: true })
   nickname: string;
-
+  // @Column({ select: false})    // 表示取数据隐藏此列
   @Exclude()
   @Column({ select: false, nullable: true })
   password: string;
@@ -58,6 +58,12 @@ export class User {
   @BeforeInsert()
   async encryptPwd() {
     if (!this.password) return;
+    /**
+     * 加密处理 - 同步方法
+     * bcryptjs.hashSync(data, salt)
+     *    - data  要加密的数据
+     *    - slat  用于哈希密码的盐。如果指定为数字，则将使用指定的轮数生成盐并将其使用。推荐 10
+     */
     this.password = await bcrypt.hashSync(this.password, 10);
   }
 }

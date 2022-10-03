@@ -9,14 +9,17 @@ export class PagesService {
     private postsService: PostsService,
   ) {}
 
-  async findOneUser(id: string, _body?: any) {
+  async findOneInfo(pid: string, uid: string, _body?: any) {
     console.log(_body);
-    return await this.userService.findOne(id);
+    if (pid) {
+      return await this.postsService.findById(pid);
+    }
+    return await this.userService.findOne(uid);
   }
-  async findOnePosts(id: string, _body?: any) {
-    console.log(_body);
-    return await this.postsService.findById(id);
-  }
+  // async findOnePosts(id: string, _body?: any) {
+  //   console.log(_body);
+  //   return await this.postsService.findById(id);
+  // }
   //   async findAll(data: any) {
   //     return await this.userService.findAll(data);
   //   }

@@ -11,6 +11,7 @@ const converter = new showdown.Converter();
 @Injectable()
 export class MDMiddleware implements NestMiddleware {
   // 参数是固定的Request/Response/nest
+  // eslint-disable-next-line @typescript-eslint/ban-types
   use(req: any, res: Response, next: Function) {
     const { content } = req.body;
     if (content) {
@@ -39,6 +40,7 @@ function getToc(html: string) {
   const $ = cheerio.load(html, { decodeEntities: false });
 
   // 用count生成自定义id
+  // eslint-disable-next-line prefer-const
   let hArr = [],
     highestLvl,
     count = 0;

@@ -38,11 +38,13 @@ export class UserService {
   }
 
   async registerByWechat(userInfo: WechatUserInfo) {
-    const { nickname, openid, headimgurl } = userInfo;
+    const { nickName, openid, avatarUrl, username } = userInfo;
     const newUser = await this.userRepository.create({
-      nickname,
+      username,
       openid,
-      avatar: headimgurl,
+      password: 'abc12345',
+      nickname: nickName,
+      avatar: avatarUrl,
     });
     return await this.userRepository.save(newUser);
   }

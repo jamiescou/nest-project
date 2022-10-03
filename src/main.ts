@@ -16,6 +16,11 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     cors: true,
   });
+  // app.enableCors({
+  //   origin: true,
+  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  //   credentials: true,
+  // });
   app.setGlobalPrefix('api'); // 全局路由前缀
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new TransformInterceptor());
@@ -42,10 +47,12 @@ async function bootstrap() {
     .setDescription('管理后台接口文档')
     .setVersion('1.0')
     // .setHost('http://www.baidu.com')
+    .setBasePath('http://192.168.31.206:9080')
     .addBearerAuth()
+    // .addSecurity()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-  await app.listen(9080);
+  await app.listen(9080, '0.0.0.0');
 }
 bootstrap();

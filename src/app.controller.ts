@@ -38,6 +38,7 @@ export class AppController {
   @ApiFile()
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile('file') file: any): Promise<any> {
+    console.log('filefilefile==>>>', file);
     // const fileSuffixs = path.extname(file.originalname);
     // console.log('fileSuffixs==>>', fileSuffixs);
     const fileSuffixStr = file.originalname.split('.');
@@ -47,7 +48,7 @@ export class AppController {
       file.originalname.indexOf(fileSuffix) - 1,
     );
     console.log('fileName11==>', file.originalname);
-    const size = (file.size / 1024 / 1024).toFixed(1);
+    const size = (file.size / 1024 / 1024).toFixed(3); // 文件大小多少M
     return this.appService.upload(file, { fileName, size, fileSuffix });
   }
 }

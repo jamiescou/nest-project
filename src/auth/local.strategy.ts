@@ -29,7 +29,6 @@ export class LocalStorage extends PassportStrategy(Strategy) {
     if (!user) {
       throw new BadRequestException('用户名不正确！');
     }
-
     if (!compareSync(password, user.password)) {
       throw new BadRequestException('密码错误！');
     }

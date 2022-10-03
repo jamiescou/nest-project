@@ -19,14 +19,31 @@ export class pagesController {
   @Get('pc/detail')
   @ApiOperation({ summary: 'PC端详情页' })
   @Render('pc/detail')
-  async pcPageList(@Query() query, @Query('id') id: string) {
-    const user = await this.pagesService.findOnePosts(id, query);
-    console.log('useruseruser==>>', user);
+  async pcPageList(
+    @Query() query,
+    @Query('postid') postid?: string,
+    @Query('userid') userid?: string,
+  ) {
+    const post = await this.pagesService.findOneInfo(postid, userid, query);
+    console.log('useruseruser==>>', post);
     return {
-      name: 'PC端详情页',
-      pageInfo: user,
+      name: postid ? 'PC端文章详情页' : 'PC端用户详情页',
+      type: postid ? 'post' : 'user',
+      pageInfo: post,
     };
   }
+  // @Get('pc/user')
+  // @ApiOperation({ summary: 'PC端详情页' })
+  // @Render('pc/detail')
+  // async pcPageUser(@Query() query, @Query('userid') userid: string) {
+  //   const user = await this.pagesService.findOneUser(userid, query);
+  //   console.log('useruseruser==>>', user);
+  //   return {
+  //     name: 'PC端用户详情页',
+  //     type: 'user',
+  //     pageInfo: user,
+  //   };
+  // }
   @ApiTags('管理端页面')
   @Get('admin')
   @ApiOperation({ summary: '管理端首页' })

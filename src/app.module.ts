@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { CategoryModule } from './category/category.module';
 import { PagesModule } from './pages/pages.module';
 import { TagModule } from './tag/tag.module';
+import { NewsModule } from './news/news.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: [envConfig.path] }),
@@ -35,6 +36,7 @@ import { TagModule } from './tag/tag.module';
     CategoryModule,
     TagModule,
     PagesModule,
+    NewsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

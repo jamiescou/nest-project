@@ -30,7 +30,7 @@ export class AppService {
     writeImage.write(fileBuffer);
     return {
       fileUrl:
-        'http://localhost:9080/storage' +
+        'http://192.168.31.206:9080/storage' +
         fileUrl +
         moment().format('YYYYMMDDhhmmss') +
         '.' +

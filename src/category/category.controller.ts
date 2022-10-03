@@ -1,9 +1,12 @@
 import { CategoryService } from './category.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Post } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('文章分类')
+@ApiBearerAuth()
+@UseGuards(AuthGuard('jwt'))
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}

@@ -8,20 +8,22 @@
 </head>
 <body>
     <div>
-        <!-- <div>
+        <% if (data.type === 'user'){%><div>
             当前用户ID是 <%=data.pageInfo.id%><br/>
             当前用户是 <%=data.pageInfo.username%><br/>
             当前用户昵称是 <%=data.pageInfo.nickname%><br/>
             当前用户角色是 <%=data.pageInfo.role%><br/>
-        </div> -->
+            当前用户头像是 <img style="width:44px;height:44px;border-radius: 5px;
+            vertical-align: middle;" src="<%=data.pageInfo.avatar%>" alt=""><br/>
+        </div><%} else {%>
         <div>
             当前文章ID是 <%=data.pageInfo.id%><br/>
             当前文章标题是 <%=data.pageInfo.title%><br/>
             当前文章标题内容是 <%=data.pageInfo.content%><br/>
-            当前文章标题内容HTML是 <%=data.pageInfo.contentHtml%><br/>
+            当前文章标题内容HTML是 <%-data.pageInfo.contentHtml%><br/>
             当前文章作者是 <%=data.pageInfo.author%><br/>
             当前文章创作时间是 <%=data.pageInfo.createTime%><br/>
-        </div>
+        </div><% } %>
     </div>
 </body>
 </html>

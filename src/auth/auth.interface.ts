@@ -1,5 +1,12 @@
 export interface AccessTokenInfo {
-  accessToken: string;
+  accessToken?: string;
+  sessionKey?: string;
+  expiresIn: number;
+  getTime: number;
+  openid: string;
+}
+export interface SessionKeyInfo {
+  sessionKey: string;
   expiresIn: number;
   getTime: number;
   openid: string;
@@ -7,6 +14,7 @@ export interface AccessTokenInfo {
 
 export interface AccessConfig {
   access_token: string;
+  session_key: string;
   refresh_token: string;
   openid: string;
   scope: string;
@@ -21,13 +29,15 @@ export interface WechatError {
 
 export interface WechatUserInfo {
   openid: string;
+  username: string;
   nickname: string;
+  nickName: string;
   sex: number;
   language: string;
   city: string;
   province: string;
   country: string;
-  headimgurl: string;
+  avatarUrl: string;
   privilege: string[];
   unionid: string;
 }
