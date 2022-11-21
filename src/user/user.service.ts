@@ -73,18 +73,25 @@ export class UserService {
   }
 
   async findOne(id: string) {
-    return await this.userRepository.findOne(id);
+    return await this.userRepository.find({
+      where: { id: id },
+    });
   }
 
   async findByOpenid(openid: string) {
     return await this.userRepository.findOne({ where: { openid } });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    // return await this.userRepository.()
+    console.log('idid', id);
+    const existUser = await this.userRepository.findOne(id);
+    console.log('existUser', existUser);
+    const updateUser = this.userRepository.merge(existUser, updateUserDto);
+    return (await this.userRepository.save(updateUser)).id;
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} user`;
   }
 
