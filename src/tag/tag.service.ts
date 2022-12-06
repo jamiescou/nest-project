@@ -15,7 +15,10 @@ export class TagService {
   }
 
   findByName() {}
-
+  async findAllTags() {
+    const qb = await this.tagRepository.createQueryBuilder('tag')
+    return  await qb.getMany();
+  }
   async findByIds(ids: string[]) {
     return this.tagRepository.findByIds(ids);
   }
