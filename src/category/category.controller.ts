@@ -1,6 +1,6 @@
 import { CategoryService } from './category.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards, Get } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -14,5 +14,10 @@ export class CategoryController {
   @Post()
   async create(@Body() body: CreateCategoryDto) {
     return await this.categoryService.create(body.name);
+  }
+  @ApiOperation({ summary: '分类列表' })
+  @Get('/list')
+  categoryList() {
+    return this.categoryService.findAllCategory();
   }
 }
