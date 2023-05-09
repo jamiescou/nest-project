@@ -10,6 +10,7 @@ import { AuthModule } from './auth/auth.module';
 import { CategoryModule } from './category/category.module';
 import { PagesModule } from './pages/pages.module';
 import { TagModule } from './tag/tag.module';
+import { DrawModule } from './draw/draw.module';
 import { NewsModule } from './news/news.module';
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { NewsModule } from './news/news.module';
     AuthModule,
     CategoryModule,
     TagModule,
+    DrawModule,
     PagesModule,
     NewsModule,
   ],

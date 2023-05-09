@@ -66,18 +66,18 @@ export class AuthService {
     return await this.userService.findByOpenid(this.accessTokenInfo.openid);
   }
   async getUserInfo() {
-    const result: AxiosResponse<WechatError & WechatUserInfo> =
-      await lastValueFrom(
-        this.httpService.get(
-          `${this.apiServer}/sns/userinfo?access_token=${this.accessTokenInfo.accessToken}&openid=${this.accessTokenInfo.openid}`,
-        ),
-      );
-    if (result.data.errcode) {
-      throw new BadRequestException(
-        `[getUserInfo] errcode:${result.data.errcode}, errmsg:${result.data.errmsg}`,
-      );
-    }
-    return result.data;
+    // const result: AxiosResponse<WechatError & WechatUserInfo> =
+    //   await lastValueFrom(
+    //     this.httpService.get(
+    //       `${this.apiServer}/sns/userinfo?access_token=${this.accessTokenInfo.accessToken}&openid=${this.accessTokenInfo.openid}`,
+    //     ),
+    //   );
+    // if (result.data.errcode) {
+    //   throw new BadRequestException(
+    //     `[getUserInfo] errcode:${result.data.errcode}, errmsg:${result.data.errmsg}`,
+    //   );
+    // }
+    // return result.data;
   }
 
   async getAccessToken(code) {
