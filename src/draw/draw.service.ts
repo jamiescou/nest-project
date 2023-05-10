@@ -29,15 +29,13 @@ export class DrawService {
     return res.data;
   }
   async getPictureById(id) {
-    const res = await axios({
+    const res: any = await axios({
       method: 'get',
       url: 'https://scribblediffusion.com/api/predictions/' + id,
     });
     console.log('getPictureById', res.data);
     if (res.data.output && res.data.output.length > 0) {
-      console.log('res.data.output==>', res.data.output);
       const downloadRes = await this.download(res.data.output[0]);
-      console.log('downloadRes==>', downloadRes);
       res.data.fileUrl =
         'http://oss.chenmychou.cn/storage/download/' + downloadRes;
     }
