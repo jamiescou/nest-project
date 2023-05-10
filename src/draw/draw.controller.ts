@@ -24,3 +24,16 @@ export class DrawController {
     return this.drawService.getPictureById(id);
   }
 }
+// async download(url: string, path: string) {
+//   const writer = createWriteStream(path);
+//   const response: any = await this.httpService.axiosRef({
+//     url,
+//     method: 'GET',
+//     responseType: 'stream',
+//   });
+//   response.data.pipe(writer);
+//   return new Promise((resolve, reject) => {
+//     writer.on('finish', resolve);
+//     writer.on('error', reject);
+//   });
+// }
