@@ -37,7 +37,7 @@ export class DrawService {
     if (res.data.output && res.data.output.length > 0) {
       const downloadRes = await this.download(res.data.output[0]);
       res.data.fileUrl =
-        'http://oss.chenmychou.cn/storage/download/' + downloadRes;
+        'https://oss.chenmychou.cn/storage/download/' + downloadRes;
     }
     return res.data;
   }
