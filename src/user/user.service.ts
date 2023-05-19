@@ -91,8 +91,12 @@ export class UserService {
     return (await this.userRepository.save(updateUser)).id;
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    const existUser = await this.userRepository.findOne(id);
+    if (!existUser) {
+      throw new HttpException(`id为${id}的用户不存在`, HttpStatus.BAD_REQUEST);
+    }
+    return await this.userRepository.remove(existUser);
   }
 
   comparePassword(password, libPassword) {

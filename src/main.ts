@@ -30,12 +30,12 @@ async function bootstrap() {
   //   prefix: '/public/',
   // });
   app.use(helmet());
-  app.use(
-    rateLimit({
-      windowMs: 60 * 60 * 1000, // 60 minutes
-      max: 100, // limit each IP to 100 requests per windowMs
-    }),
-  );
+  //app.use(
+  //  rateLimit({
+  //    windowMs: 60 * 60 * 1000, // 60 minutes
+  //    max: 100, // limit each IP to 100 requests per windowMs
+  //  }),
+  //);
   app.useStaticAssets('public', {
     prefix: '/storage/',
   });
