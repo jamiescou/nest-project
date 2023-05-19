@@ -5,16 +5,25 @@ import fs, { createWriteStream } from 'fs';
 import * as path from 'path';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const moment = require('moment');
-// import { InjectRepository } from '@nestjs/typeorm';
-// import { Repository } from 'typeorm';
-// import { DrawEntity } from './entities/draw.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { DrawEntity } from './entities/draw.entity';
+import {
+  CreateDrawDto,
+  DrawRecordRo,
+  DrawRecordInfoDto,
+} from './dto/create-draw.dto';
 
 @Injectable()
 export class DrawService {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor(private readonly httpService: HttpService) {} // private readonly drawRepository: Repository<DrawEntity>, // @InjectRepository(DrawEntity)
+  // constructor(private readonly httpService: HttpService) {} // private readonly drawRepository: Repository<DrawEntity>, // @InjectRepository(DrawEntity)
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  // constructor() {} // private readonly drawRepository: Repository<DrawEntity>, // @InjectRepository(DrawEntity)
+  constructor(
+    @InjectRepository(DrawEntity)
+    private readonly drawRepository: Repository<DrawEntity>,
+    private readonly httpService: HttpService,
+  ) {}
   async predictImage(prompt, image) {
     const params: any = {
       prompt: prompt,
@@ -60,5 +69,81 @@ export class DrawService {
       writer.on('finish', resolve(fileName));
       writer.on('error', reject(false));
     });
+  }
+
+  async creatRecord(data: CreateDrawDto) {
+    const newRecord: DrawEntity = await this.drawRepository.create(data);
+    const created = await this.drawRepository.save(newRecord);
+    return created.id;
+  }
+
+  async findAll(query): Promise<DrawRecordRo> {
+    const qb = await this.drawRepository
+      .createQueryBuilder('draw')
+      .leftJoinAndSelect('draw.user', 'user')
+      .orderBy('draw.updateTime', 'DESC');
+    if (query.type && query.userId) {
+      qb.where('draw.type =:type and draw.user =:userId', {
+        type: query.type,
+        userId: query.userId,
+      });
+    } else if (query.type) {
+      qb.where('draw.type =:type', {
+        type: query.type,
+      });
+    } else if (query.userId) {
+      qb.where('draw.user =:userId', {
+        userId: query.userId,
+      });
+    } else if (query.startTime && query.endTime) {
+      qb.where('draw.create_time BETWEEN :startTime AND :endTime', {
+        startTime: query.startTime,
+        endTime: query.endTime,
+      });
+    }
+    qb.orderBy('draw.create_time', 'DESC');
+
+    const count = await qb.getCount();
+    const { pageNum = 1, pageSize = 10 } = query;
+    qb.limit(pageSize);
+    qb.offset(pageSize * (pageNum - 1));
+
+    const records = await qb.getMany();
+    console.log('records==>', records);
+    const result: DrawRecordInfoDto[] = records.map((item) =>
+      item.toResponseObject(),
+    );
+    return { list: result, count: count };
+  }
+  async getRecordList(query, userId): Promise<DrawRecordRo> {
+    const qb = await this.drawRepository
+      .createQueryBuilder('draw')
+      .leftJoinAndSelect('draw.user', 'user')
+      .where('draw.user =:userId', {
+        userId: userId || '',
+      })
+      .orderBy('draw.updateTime', 'DESC');
+    if (query.type) {
+      qb.where('draw.type =:type', {
+        type: query.type,
+      });
+    } else if (query.startTime && query.endTime) {
+      qb.where('draw.create_time BETWEEN :startTime AND :endTime', {
+        startTime: query.startTime,
+        endTime: query.endTime,
+      });
+    }
+    qb.orderBy('draw.create_time', 'DESC');
+
+    const count = await qb.getCount();
+    const { pageNum = 1, pageSize = 10 } = query;
+    qb.limit(pageSize);
+    qb.offset(pageSize * (pageNum - 1));
+
+    const records = await qb.getMany();
+    const result: DrawRecordInfoDto[] = records.map((item) =>
+      item.toResponseObject(),
+    );
+    return { list: result, count: count };
   }
 }
