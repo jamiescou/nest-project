@@ -9,12 +9,14 @@ import {
 import * as bcrypt from 'bcryptjs';
 import { ApiProperty } from '@nestjs/swagger';
 import { PostsEntity } from 'src/posts/posts.entity';
+import { DrawEntity } from 'src/draw/entities/draw.entity';
 @Entity('user')
 export class User {
   @ApiProperty({ description: '用户id' })
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
+  @OneToMany(() => DrawEntity, (draw) => draw.user)
+  draw: DrawEntity[];
   @Column({ length: 100, nullable: true })
   username: string;
 

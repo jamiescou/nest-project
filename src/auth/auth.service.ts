@@ -34,10 +34,17 @@ export class AuthService {
       role: user.role,
     });
 
-    return { token };
+    return {
+      token,
+      id: user.id,
+      username: user.username,
+      openid: user.openid || '',
+      avatarUrl: user.avatar || '',
+    };
   }
 
   async loginWithWechat(userInfo) {
+    console.log('loginWithWechat', userInfo);
     this.accessTokenInfo = null;
     if (!userInfo.code) {
       throw new BadRequestException('请输入微信授权码');
@@ -97,6 +104,7 @@ export class AuthService {
           `[getAccessToken] errcode:${res.data.errcode}, errmsg:${res.data.errmsg}`,
         );
       }
+      console.log('getAccessToken', res.data);
       this.accessTokenInfo = {
         sessionKey: res.data.session_key,
         expiresIn: res.data.expires_in,

@@ -42,7 +42,7 @@ export class UserService {
     const newUser = await this.userRepository.create({
       username,
       openid,
-      password: 'abc12345',
+      password: 'abc12345', // 默认密码
       nickname: nickName,
       avatar: avatarUrl,
     });
