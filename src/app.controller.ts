@@ -5,10 +5,18 @@ import {
   Put,
   Render,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { AppService } from './app.service';
+import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as path from 'path';
 
@@ -31,7 +39,8 @@ export const ApiFile =
 @Controller('app')
 export class AppController {
   constructor(private readonly appService: AppService) {}
-
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
   @Post('upload')
   @ApiOperation({ summary: '上传文件' })
   @ApiConsumes('multipart/form-data')
