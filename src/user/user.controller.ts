@@ -11,6 +11,7 @@ import {
   UseGuards,
   Request,
   Req,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -23,6 +24,7 @@ import {
 } from '@nestjs/swagger';
 import { UserInfoDto } from './dto/user-info.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { query } from 'express';
 
 @ApiTags('用户')
 @Controller('user')
@@ -38,27 +40,38 @@ export class UserController {
     return this.userService.register(createUser);
   }
 
-  @ApiOperation({ summary: '获取用户信息' })
+  // @ApiOperation({ summary: '获取用户信息' })
+  // @ApiBearerAuth()
+  // @UseGuards(AuthGuard('jwt'))
+  // @Get()
+  // async getUserInfo(@Req() req) {
+  //   return req.user;
+  // }
   @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
-  @Get()
-  async getUserInfo(@Req() req) {
-    return req.user;
-  }
-
-  @Get(':id')
+  @Get('/userInfo/:id')
   findOne(@Param('id') id: string) {
+    console.log(222);
     return this.userService.findOne(id);
   }
-
-  @Put(':id')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Put('/userInfo/:id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     console.log('ssssss===', id, updateUserDto);
     return this.userService.update(id, updateUserDto);
   }
-
-  @Delete(':id')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('/userInfo/:id')
   remove(@Param('id') id: string) {
     return this.userService.remove(id);
+  }
+  @ApiOperation({ summary: '获取所有用户' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/getUserList')
+  async getUserList(@Query() query) {
+    return this.userService.getUserList(query);
   }
 }

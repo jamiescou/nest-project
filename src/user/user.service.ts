@@ -9,6 +9,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserListRo } from './dto/user-info.dto';
 import { Repository } from 'typeorm';
 import { WechatUserInfo } from '../auth/auth.interface';
 
@@ -68,8 +69,16 @@ export class UserService {
   //     return existUser;
   //   }
 
-  findAll() {
-    return `This action returns all user`;
+  async getUserList(query): Promise<UserListRo> {
+    const qb = await this.userRepository
+      .createQueryBuilder('user')
+      .orderBy('user.updateTime', 'DESC');
+    const count = await qb.getCount();
+    const { pageNum = 1, pageSize = 10, ...params } = query;
+    qb.limit(pageSize);
+    qb.offset(pageSize * (pageNum - 1));
+    const records = await qb.getMany();
+    return { list: records, count: count };
   }
 
   async findOne(id: string) {
@@ -83,10 +92,7 @@ export class UserService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    // return await this.userRepository.()
-    console.log('idid', id);
     const existUser = await this.userRepository.findOne(id);
-    console.log('existUser', existUser);
     const updateUser = this.userRepository.merge(existUser, updateUserDto);
     return (await this.userRepository.save(updateUser)).id;
   }
