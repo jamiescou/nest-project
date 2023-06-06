@@ -119,13 +119,14 @@ export class DrawService {
     const qb = await this.drawRepository
       .createQueryBuilder('draw')
       .leftJoinAndSelect('draw.user', 'user')
-      .where('draw.userId =:userId', {
-        userId: userId || '',
-      })
       .orderBy('draw.updateTime', 'DESC');
+    qb.where('draw.userId =:userId', {
+      userId: userId,
+    });
     if (query.type) {
-      qb.where('draw.type =:type', {
+      qb.where('draw.type =:type AND draw.userId =:userId', {
         type: query.type * 1,
+        userId: userId,
       });
     } else if (query.startTime && query.endTime) {
       qb.where('draw.create_time BETWEEN :startTime AND :endTime', {
