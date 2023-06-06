@@ -89,7 +89,7 @@ export class DrawService {
       });
     } else if (query.type) {
       qb.where('draw.type =:type', {
-        type: query.type,
+        type: query.type * 1,
       });
     } else if (query.userId) {
       qb.where('draw.user =:userId', {
@@ -119,13 +119,13 @@ export class DrawService {
     const qb = await this.drawRepository
       .createQueryBuilder('draw')
       .leftJoinAndSelect('draw.user', 'user')
-      .where('draw.user =:userId', {
+      .where('draw.userId =:userId', {
         userId: userId || '',
       })
       .orderBy('draw.updateTime', 'DESC');
     if (query.type) {
       qb.where('draw.type =:type', {
-        type: query.type,
+        type: query.type * 1,
       });
     } else if (query.startTime && query.endTime) {
       qb.where('draw.create_time BETWEEN :startTime AND :endTime', {
@@ -133,6 +133,7 @@ export class DrawService {
         endTime: query.endTime,
       });
     }
+    console.log('service in draw===>>', query, userId);
     qb.orderBy('draw.create_time', 'DESC');
 
     const count = await qb.getCount();

@@ -82,6 +82,7 @@ export class DrawController {
     @Headers() header,
   ): Promise<DrawRecordRo> {
     const userId = header.userid;
+    console.log('header========>', header, query);
     return await this.drawService.getRecordList(query, userId);
   }
 }
