@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+   <meta http-equiv="Content-Security-Policy" content="default-src *;img-src 'https://haokaapi.lot-ml.com'; 'self' data: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' *;style-src  'self' 'unsafe-inline' *">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- <meta http-equiv="Content-Security-Policy" content="img-src 'https://haokaapi.lot-ml.com'; object-src 'none'; style-src cdn.example.org third-party.org; child-src https:"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%=data.name%></title>
+</head>
+<body>
+    <div>
+        <div>
+
+            当前流量卡产品ID是: <span style="color: brown;"><%=data.card.productID%></span><br/>
+            当前流量卡产品名称是: <span style="color: brown;"><%=data.card.productName%></span><br/>
+            当前流量卡标题内容是: <span style="color: brown;"><%=data.card.remark%></span><br/>
+            当前流量卡规则是: <span style="color: brown;"><%=data.card.rule%></span><br/>
+            当前流量卡其他说明规则是: <span style="color: brown;"><%=data.card.disableArea%></span><br/>
+            当前流量卡专属链接是: <span style="color: brown;"><a href="https://haokawx.lot-ml.com/h5order/index?pudID=<%=data.card.productID%>&userid=<%=data.card.userID%>">https://haokawx.lot-ml.com/h5order/index?pudID=<%=data.card.productID%>&userid=<%=data.card.userID%></a></span><br/>
+        </div>
+    </div>
+</body>
+</html>
