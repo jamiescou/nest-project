@@ -48,6 +48,7 @@ export class CardController {
         'utf8',
       );
       const cards = JSON.parse(data);
+      await this.cardService.clearCard();
       const results = cards.data.map((item) => {
         return {
           id: item.id,

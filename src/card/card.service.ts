@@ -60,4 +60,10 @@ export class CardService {
 
     return result;
   }
+  // 清空card_tb表数据
+  async clearCard(): Promise<any> {
+    const qb = this.cardRepository.createQueryBuilder('card_tb');
+    const result = await qb.delete().execute();
+    return result;
+  }
 }
