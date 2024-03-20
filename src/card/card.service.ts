@@ -17,7 +17,6 @@ export class CardService {
   }
   async findAll(query): Promise<CardRo> {
     const qb = await this.cardRepository.createQueryBuilder('card_tb');
-    qb.orderBy('post.create_time', 'DESC');
 
     const count = await qb.getCount();
     const { pageNum = 1, pageSize = 10, ...params } = query;
