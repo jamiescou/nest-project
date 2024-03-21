@@ -13,7 +13,6 @@ import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { CreateCardDto, CardRo, CardInfoDto } from './dto/card.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard, Roles } from '../auth/role.guard';
-import { fstat } from 'fs';
 
 @ApiTags('流量卡')
 @Controller('card')
@@ -37,52 +36,56 @@ export class CardController {
    * 获取指定文章
    * @param id
    */
-  @ApiOperation({ summary: '导入所有流量卡' })
+  @ApiOperation({ summary: '根据cardResp.json文件导入更新所有流量卡' })
   // @ApiBearerAuth()
   // @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Get('/import')
-  async importAllCard(@Query('fileName') fileName: string): Promise<any> {
+  async importAllCard(): Promise<any> {
     try {
-      const data = fs.readFileSync(
-        'public/files/' + fileName + '.json',
-        'utf8',
-      );
-      const cards = JSON.parse(data);
-      await this.cardService.clearCard();
-      const results = cards.data.map((item) => {
-        return {
-          id: item.id,
-          productID: item.productID,
-          productName: item.productName,
-          remark: item.remark,
-          mainPic: item.mainPic,
-          littlepicture: item.littlepicture,
-          userID: item.userID,
-          rule: item.rule,
-          areaRead: item.areaRead,
-          acquireModel: item.acquireModel,
-          idCardRepeat: item.idCardRepeat,
-          phoneRepeat: item.phoneRepeat,
-          firstLevelMoney: item.firstLevelMoney,
-          numberSel: item.numberSel,
-          backMoneyType: item.backMoneyType,
-          age2: item.age2,
-          age1: item.age1,
-          zhutui: item.zhutui,
-          disableArea: item.disableArea,
-          area: item.area,
-          photoType: item.photoType,
-          positionform: item.positionform,
-          parentProductID: item.parentProductID,
-          operator: item.operator,
-          sPriceRead: item.sPriceRead,
-          sPrice: item.sPrice,
-          commissionType: item.commissionType,
-          count: null,
-        };
-      });
-      await this.cardService.importCard(results);
-      return '数据导入成功';
+      // 物理删除原来的cardResp.json
+      if (fs.existsSync('public/files/cardResp.json')) {
+        fs.unlinkSync('public/files/cardResp.json');
+      }
+      const result = await this.cardService.getCardFileResult();
+      if (result) {
+        const data = fs.readFileSync('public/files/cardResp.json', 'utf8');
+        const cards = JSON.parse(data);
+        await this.cardService.clearCard();
+        const results = cards.data.map((item) => {
+          return {
+            id: item.id,
+            productID: item.productID,
+            productName: item.productName,
+            remark: item.remark,
+            mainPic: item.mainPic,
+            littlepicture: item.littlepicture,
+            userID: item.userID,
+            rule: item.rule,
+            areaRead: item.areaRead,
+            acquireModel: item.acquireModel,
+            idCardRepeat: item.idCardRepeat,
+            phoneRepeat: item.phoneRepeat,
+            firstLevelMoney: item.firstLevelMoney,
+            numberSel: item.numberSel,
+            backMoneyType: item.backMoneyType,
+            age2: item.age2,
+            age1: item.age1,
+            zhutui: item.zhutui,
+            disableArea: item.disableArea,
+            area: item.area,
+            photoType: item.photoType,
+            positionform: item.positionform,
+            parentProductID: item.parentProductID,
+            operator: item.operator,
+            sPriceRead: item.sPriceRead,
+            sPrice: item.sPrice,
+            commissionType: item.commissionType,
+            count: null,
+          };
+        });
+        await this.cardService.importCard(results);
+        return '数据导入成功';
+      }
     } catch (error) {
       return '数据文件不存在';
     }
@@ -91,5 +94,15 @@ export class CardController {
   @Get('/findCardById')
   async findCardById(@Query('id') id: string): Promise<CardInfoDto> {
     return await this.cardService.findById(id);
+  }
+  // 根据请求到的数据保存为json文件
+  @ApiOperation({ summary: '从小程序抓取数据并保存到文件cardResp.json' })
+  @Get('/saveCardFile')
+  async saveCardFile(): Promise<any> {
+    const result = await this.cardService.getCardFileResult();
+    if (result) {
+      return '数据保存成功';
+    }
+    return '数据保存失败';
   }
 }

@@ -3,7 +3,9 @@ import { HttpException, Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getRepository, Repository } from 'typeorm';
 import { CardEntity } from './card.entity';
-import fs from 'fs';
+import axios, { AxiosResponse } from 'axios';
+import * as fs from 'fs';
+
 @Injectable()
 export class CardService {
   constructor(
@@ -59,6 +61,24 @@ export class CardService {
     // await this.cardRepository.update(id, { count: result.count + 1 });
 
     return result;
+  }
+  // 通过axios调取接口数据，并将响应保存为json文件
+  async getCardFileResult(): Promise<any> {
+    const res = await axios({
+      method: 'get',
+      url: 'https://172appapi.lot-ml.com/api/Products/Query?TimeType=0&page=1&limit=100',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization:
+          'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBZ2VudElEIjoiNDMwMzE4IiwibG9naW5OYW1lIjoi6YK55q2j6ZizIiwiVXNlck5hbWUiOiJ6b3Vib3kiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiI0MzAzMTgiLCJuYmYiOjE3MTA3Mjc2NzUsImV4cCI6MTcxMTMzMjQ3NSwiaXNzIjoiWlNTb2Z0LkRhVGllLlVuaUFwaSIsImF1ZCI6IlpTU29mdC5EYVRpZS5VbmlBcGkifQ.m3yi69goEoY0mj5zA6eQBehkDqUe8CeHGoBJLv6WHBI',
+      },
+    });
+    try {
+      fs.writeFileSync('public/files/cardResp.json', JSON.stringify(res.data));
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
   // 清空card_tb表数据
   async clearCard(): Promise<any> {
