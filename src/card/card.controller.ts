@@ -22,8 +22,8 @@ export class CardController {
    * 获取所有文章
    */
   @ApiOperation({ summary: '获取流量卡列表' })
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  // @ApiBearerAuth()
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Get('/list')
   async findAll(
     @Query() query,
