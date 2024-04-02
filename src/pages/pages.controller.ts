@@ -1,6 +1,7 @@
 import { Controller, Get, Render, Param, Inject, Query } from '@nestjs/common';
 import { PagesService } from './pages.service';
 import { CardService } from '../card/card.service';
+import * as fs from 'fs';
 
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 @Controller('pages')
@@ -58,6 +59,22 @@ export class pagesController {
   adminPage() {
     return {
       name: '管理端页面',
+    };
+  }
+  @ApiTags('操作手册说明页面')
+  @Get('admin/manual')
+  @ApiOperation({ summary: '操作手册说明页面' })
+  @Render('admin/json')
+  manualPage(@Query('fileNo') fileNo: string) {
+    const data = fs.readFileSync(
+      'public/datafile/datajson/' + fileNo + '.json',
+      'utf8',
+    );
+    const jsonData = JSON.parse(data);
+    console.log('jsonData', jsonData);
+    return {
+      name: '操作手册说明页面',
+      data: jsonData,
     };
   }
 }

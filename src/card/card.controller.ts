@@ -105,4 +105,26 @@ export class CardController {
     }
     return '数据保存失败';
   }
+  /**
+   * 获取指定文章
+   * @param id
+   */
+  @ApiOperation({ summary: '根据111.json文件显示数据' })
+  // @ApiBearerAuth()
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Get('/getJsonDataShow')
+  async getJsonDataShow(@Query('fileNo') fileNo: string): Promise<any> {
+    try {
+      const data = fs.readFileSync(
+        'public/datafile/' + fileNo + '.json',
+        'utf8',
+      );
+      const jsonData = JSON.parse(data);
+      const results = jsonData;
+      // await this.cardService.importCard(results);
+      return '数据导入成功';
+    } catch (error) {
+      return '数据文件不存在';
+    }
+  }
 }
