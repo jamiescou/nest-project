@@ -26,35 +26,47 @@ export class DrawService {
   ) {}
   async predictImage(prompt, image) {
     const params: any = {
+      model: 'dall-e-3',
       prompt: prompt,
-      image: image,
-      structure: 'scribble',
+      n: 1,
+      size: '1024x1024',
     };
     const res = await axios({
       method: 'post',
-      url: 'https://scribblediffusion.com/api/predictions',
+      url: 'https://burn.hair/v1/images/generations',
       data: params,
+      headers: {
+        Authorization:
+          'Bearer sk-SfpXrt18VoL5MCId279f52Fa7e6c47219f290fC19d4c04E7',
+      },
     });
-    return res.data;
+    const downloadRes = await this.download(res.data.data[0].url);
+    const result = {
+      code: 200,
+      msg: '操作成功',
+      fileUrl: 'https://oss.chenmychou.cn/storage/download/' + downloadRes,
+    };
+    console.log('resultresult', result, res.data.data);
+    return result;
   }
-  async getPictureById(id) {
-    const res: any = await axios({
-      method: 'get',
-      url: 'https://scribblediffusion.com/api/predictions/' + id,
-    });
-    console.log('getPictureById', res.data);
-    if (res.data.output && res.data.output.length === 2) {
-      const downloadRes = await this.download(res.data.output[1]);
-      res.data.fileUrl =
-        'https://oss.chenmychou.cn/storage/download/' + downloadRes;
-    }
-
-    else if (res.data.output && res.data.output.length === 1) {
-      const downloadRes = await this.download(res.data.output[0]);
-      res.data.fileUrl =
-        'https://oss.chenmychou.cn/storage/download/' + downloadRes;
-    }
-    return res.data;
+  async getPictureById(url) {
+    // const res: any = await axios({
+    //   method: 'get',
+    //   url: url,
+    // });
+    const downloadRes = await this.download(url);
+    // if (res.data.output && res.data.output.length === 2) {
+    //   const downloadRes = await this.download(res.data.output[1]);
+    //   res.data.fileUrl =
+    //     'https://oss.chenmychou.cn/storage/download/' + downloadRes;
+    // } else if (res.data.output && res.data.output.length === 1) {
+    //   const downloadRes = await this.download(res.data.output[0]);
+    //   res.data.fileUrl =
+    //     'https://oss.chenmychou.cn/storage/download/' + downloadRes;
+    // }
+    return {
+      fileUrl: 'https://oss.chenmychou.cn/storage/download/' + downloadRes,
+    };
   }
   async download(url: string) {
     const fileName =

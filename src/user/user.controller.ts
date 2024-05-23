@@ -13,6 +13,8 @@ import {
   Req,
   Query,
 } from '@nestjs/common';
+import * as fs from 'fs';
+const moment = require('moment');
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -73,5 +75,43 @@ export class UserController {
   @Get('/getUserList')
   async getUserList(@Query() query) {
     return this.userService.getUserList(query);
+  }
+  @ApiTags('头顶冒火签到')
+  @Get('/signIn')
+  @ApiOperation({ summary: '头顶冒火签到' })
+  async userSignIn(@Query('session') session: string) {
+    console.log('头顶冒火签到', session);
+    const data = fs.readFileSync('public/session.json', 'utf8') || '[]';
+    const sessionData = JSON.parse(data);
+    const oldLen = sessionData.length;
+    sessionData.filter((item: any) => {
+      if (session && item.session !== session) {
+        sessionData.push({
+          session,
+          applyTime: moment().format('YYYY-MM-DD hh:mm:ss'),
+        });
+      }
+    });
+    const newLen = sessionData.length;
+    const res = await this.userService.signIn({
+      session: session,
+      applyTime: moment().format('YYYY-MM-DD hh:mm:ss'),
+    });
+    if (!res.message.includes('未登录且未提供') && newLen !== oldLen) {
+      if (oldLen === 0) {
+        fs.writeFileSync(
+          'public/session.json',
+          JSON.stringify([
+            {
+              session: session,
+              applyTime: moment().format('YYYY-MM-DD hh:mm:ss'),
+            },
+          ]),
+        );
+        return res;
+      }
+      fs.writeFileSync('public/session.json', JSON.stringify(sessionData));
+    }
+    return res;
   }
 }
