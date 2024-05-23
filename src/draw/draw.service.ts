@@ -43,7 +43,13 @@ export class DrawService {
       url: 'https://scribblediffusion.com/api/predictions/' + id,
     });
     console.log('getPictureById', res.data);
-    if (res.data.output && res.data.output.length > 0) {
+    if (res.data.output && res.data.output.length === 2) {
+      const downloadRes = await this.download(res.data.output[1]);
+      res.data.fileUrl =
+        'https://oss.chenmychou.cn/storage/download/' + downloadRes;
+    }
+
+    else if (res.data.output && res.data.output.length === 1) {
       const downloadRes = await this.download(res.data.output[0]);
       res.data.fileUrl =
         'https://oss.chenmychou.cn/storage/download/' + downloadRes;
