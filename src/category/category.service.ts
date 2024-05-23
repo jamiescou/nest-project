@@ -18,7 +18,7 @@ export class CategoryService {
     return await this.categoryRepository.findOne(id);
   }
   async findAllCategory() {
-    const qb = await this.categoryRepository.createQueryBuilder('category')
-    return  await qb.getMany();
+    const qb = await this.categoryRepository.createQueryBuilder('category');
+    return await qb.getMany();
   }
 }

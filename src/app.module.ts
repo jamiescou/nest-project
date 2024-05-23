@@ -12,6 +12,7 @@ import { PagesModule } from './pages/pages.module';
 import { TagModule } from './tag/tag.module';
 import { DrawModule } from './draw/draw.module';
 import { NewsModule } from './news/news.module';
+import { CardModule } from './card/card.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: [envConfig.path] }),
@@ -20,7 +21,7 @@ import { NewsModule } from './news/news.module';
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
         type: 'mysql',
-        host: configService.get('DB_HOST', '127.0.0.1'),
+        host: configService.get('DB_HOST', '47.116.77.217'),
         port: configService.get<number>('DB_PORT', 3306),
         username: configService.get('DB_USER', 'root'),
         password: configService.get('DB_PASSWORD', 'Xtaier123!'),
@@ -39,6 +40,7 @@ import { NewsModule } from './news/news.module';
     DrawModule,
     PagesModule,
     NewsModule,
+    CardModule,
   ],
   controllers: [AppController],
   providers: [AppService],

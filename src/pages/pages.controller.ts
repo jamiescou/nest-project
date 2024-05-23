@@ -1,9 +1,15 @@
 import { Controller, Get, Render, Param, Inject, Query } from '@nestjs/common';
 import { PagesService } from './pages.service';
+import { CardService } from '../card/card.service';
+import * as fs from 'fs';
+
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 @Controller('pages')
 export class pagesController {
-  constructor(private readonly pagesService: PagesService) {}
+  constructor(
+    private readonly pagesService: PagesService,
+    private readonly cardService: CardService,
+  ) {}
   @ApiTags('PC端页面')
   @Get('pc')
   @ApiOperation({ summary: 'PC端首页' })
@@ -32,18 +38,20 @@ export class pagesController {
       pageInfo: post,
     };
   }
-  // @Get('pc/user')
-  // @ApiOperation({ summary: 'PC端详情页' })
-  // @Render('pc/detail')
-  // async pcPageUser(@Query() query, @Query('userid') userid: string) {
-  //   const user = await this.pagesService.findOneUser(userid, query);
-  //   console.log('useruseruser==>>', user);
-  //   return {
-  //     name: 'PC端用户详情页',
-  //     type: 'user',
-  //     pageInfo: user,
-  //   };
-  // }
+
+  @ApiTags('流量卡页面')
+  @Get('pc/admin-card')
+  @ApiOperation({ summary: '流量卡页面' })
+  @Render('pc/card')
+  async cardPage(@Query() query, @Query('id') id?: string) {
+    const card = await this.pagesService.findCardInfo(id);
+    console.log('cardcardcard==>>', card);
+    return {
+      name: '流量卡页面',
+      card,
+    };
+  }
+
   @ApiTags('管理端页面')
   @Get('admin')
   @ApiOperation({ summary: '管理端首页' })
@@ -51,6 +59,22 @@ export class pagesController {
   adminPage() {
     return {
       name: '管理端页面',
+    };
+  }
+  @ApiTags('操作手册说明页面')
+  @Get('admin/manual')
+  @ApiOperation({ summary: '操作手册说明页面' })
+  @Render('admin/json')
+  manualPage(@Query('fileNo') fileNo: string) {
+    const data = fs.readFileSync(
+      'public/datafile/datajson/' + fileNo + '.json',
+      'utf8',
+    );
+    const jsonData = JSON.parse(data);
+    console.log('jsonData', jsonData);
+    return {
+      name: '操作手册说明页面',
+      data: jsonData,
     };
   }
 }
