@@ -29,24 +29,31 @@ export class DrawService {
       model: 'dall-e-3',
       prompt: prompt,
       n: 1,
-      size: '512x512',
+      size: '1024x1024',
     };
-    const res: any = await axios({
-      method: 'post',
-      url: 'https://burn.hair/v1/images/generations',
-      data: params,
-      headers: {
-        Authorization:
-          'Bearer sk-SfpXrt18VoL5MCId279f52Fa7e6c47219f290fC19d4c04E7',
-      },
-    });
-    const downloadRes = await this.download(res.data.data[0].url);
-    const result = {
-      code: 200,
-      msg: '操作成功',
-      fileUrl: 'https://oss.chenmychou.cn/storage/download/' + downloadRes,
-    };
-    return result;
+    try {
+      const res: any = await axios({
+        method: 'post',
+        url: 'https://burn.hair/v1/images/generations',
+        data: params,
+        headers: {
+          Authorization:
+            'Bearer sk-SfpXrt18VoL5MCId279f52Fa7e6c47219f290fC19d4c04E7',
+        },
+      });
+      const downloadRes = await this.download(res.data.data[0].url);
+      const result = {
+        code: 200,
+        msg: '操作成功',
+        fileUrl: 'https://oss.chenmychou.cn/storage/download/' + downloadRes,
+      };
+      return result;
+    } catch (error) {
+      console.log(error.response.data);
+      return {
+        msg: '操作失败',
+      };
+    }
   }
   async getPictureById(url) {
     // const res: any = await axios({
