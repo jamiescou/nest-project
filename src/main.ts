@@ -53,6 +53,6 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-  await app.listen(9099, '0.0.0.0');
+  await app.listen(9080, '0.0.0.0');
 }
 bootstrap();
