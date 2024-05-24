@@ -21,7 +21,7 @@ async function bootstrap() {
   //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   //   credentials: true,
   // });
-  app.setGlobalPrefix('api'); // 全局路由前缀
+  app.setGlobalPrefix('app'); // 全局路由前缀
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new TransformInterceptor());
 
@@ -30,12 +30,12 @@ async function bootstrap() {
   //   prefix: '/public/',
   // });
   app.use(helmet());
-  app.use(
-    rateLimit({
-      windowMs: 10 * 60 * 1000, // 10 minutes
-      max: 50, // limit each IP to 100 requests per windowMs
-    }),
-  );
+  //app.use(
+  //  rateLimit({
+  //    windowMs: 60 * 60 * 1000, // 60 minutes
+  //    max: 100, // limit each IP to 100 requests per windowMs
+  //  }),
+  //);
   app.useStaticAssets('public', {
     prefix: '/storage/',
   });
@@ -53,6 +53,6 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-  await app.listen(9080, '0.0.0.0');
+  await app.listen(9099, '0.0.0.0');
 }
 bootstrap();

@@ -3,7 +3,7 @@ import * as path from 'path';
 // const dotenv = require('dotenv');
 const isProd = process.env.NODE_ENV === 'production';
 function parseEnv() {
-  const localEnv = path.resolve('.env');
+  const localEnv = path.resolve('.env.dev.local');
   const prodEnv = path.resolve('.env.prod');
 
   if (!fs.existsSync(localEnv) && !fs.existsSync(prodEnv)) {

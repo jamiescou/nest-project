@@ -30,7 +30,7 @@ export class AppService {
     writeImage.write(fileBuffer);
     return {
       fileUrl:
-        'http://192.168.31.206:9080/storage' +
+        'http://oss.chenmychou.cn/storage' +
         fileUrl +
         moment().format('YYYYMMDDhhmmss') +
         '.' +

@@ -1,10 +1,8 @@
-import { CategoryService } from '../category/category.service';
 import { CreateNewsDto, NewsInfoDto, NewsRo } from './dto/news.dto';
 import { HttpException, Injectable, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getRepository, Repository } from 'typeorm';
 import { NewsEntity } from './news.entity';
-import { TagService } from '../tag/tag.service';
 import { count } from 'console';
 
 @Injectable()
@@ -12,21 +10,19 @@ export class NewsService {
   constructor(
     @InjectRepository(NewsEntity)
     private readonly newssRepository: Repository<NewsEntity>,
-    private readonly categoryService: CategoryService,
-    private readonly tagService: TagService,
   ) {}
 
   async create(user, news: CreateNewsDto): Promise<number> {
     const { title } = news;
     if (!title) {
-      throw new HttpException('缺少文章标题', HttpStatus.BAD_REQUEST);
+      throw new HttpException('缺少新闻标题', HttpStatus.BAD_REQUEST);
     }
 
     const doc = await this.newssRepository.findOne({
       where: { title },
     });
     if (doc) {
-      throw new HttpException('文章已存在', HttpStatus.BAD_REQUEST);
+      throw new HttpException('新闻已存在', HttpStatus.BAD_REQUEST);
     }
 
     // const { tag, category = 0, status, isRecommend, coverUrl } = news;
@@ -34,10 +30,10 @@ export class NewsService {
     // const categoryDoc = await this.categoryService.findById(category);
 
     // const tags = await this.tagService.findByIds(('' + tag).split(','));
-    // const newsParam: Partial<NewsEntity> = {
-    //   ...news,
-    //   author: user,
-    // };
+    const newsParam: Partial<NewsEntity> = {
+      ...news,
+      author: user,
+    };
     // if (status === 'publish') {
     //   Object.assign(newsParam, {
     //     publishTime: new Date(),
@@ -45,7 +41,7 @@ export class NewsService {
     // }
 
     const newNews: NewsEntity = await this.newssRepository.create({
-      ...news,
+      ...newsParam,
     });
     const created = await this.newssRepository.save(newNews);
     return created.id;
@@ -54,11 +50,9 @@ export class NewsService {
   async findAll(query): Promise<NewsRo> {
     const qb = await this.newssRepository
       .createQueryBuilder('news')
-      .leftJoinAndSelect('news.category', 'category')
-      .leftJoinAndSelect('news.tags', 'tag')
       .leftJoinAndSelect('news.author', 'user')
       .orderBy('news.updateTime', 'DESC');
-    qb.where('1 = 1');
+    // qb.where('1 = 1');
     qb.orderBy('news.create_time', 'DESC');
 
     const count = await qb.getCount();
@@ -67,6 +61,7 @@ export class NewsService {
     qb.offset(pageSize * (pageNum - 1));
 
     const news = await qb.getMany();
+    console.log('news==>>', this);
     const result: NewsInfoDto[] = news.map((item) => item.toResponseObject());
     return { list: result, count: count };
 
@@ -89,15 +84,13 @@ export class NewsService {
   async findById(id): Promise<any> {
     const qb = this.newssRepository
       .createQueryBuilder('news')
-      .leftJoinAndSelect('news.category', 'category')
-      .leftJoinAndSelect('news.tags', 'tag')
       .leftJoinAndSelect('news.author', 'user')
       .where('news.id=:id')
       .setParameter('id', id);
 
     const result = await qb.getOne();
     if (!result)
-      throw new HttpException(`id为${id}的文章不存在`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(`id为${id}的新闻不存在`, HttpStatus.BAD_REQUEST);
     // await this.newssRepository.update(id, { count: result.count + 1 });
 
     return result.toResponseObject();
@@ -106,17 +99,12 @@ export class NewsService {
   async updateById(id, news): Promise<number> {
     const existNews = await this.newssRepository.findOne(id);
     if (!existNews) {
-      throw new HttpException(`id为${id}的文章不存在`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(`id为${id}的新闻不存在`, HttpStatus.BAD_REQUEST);
     }
 
-    const { category, tag, status } = news;
-    const tags = await this.tagService.findByIds(('' + tag).split(','));
-    const categoryDoc = await this.categoryService.findById(category);
+    const { status } = news;
     const newNews = {
       ...news,
-      isRecommend: news.isRecommend ? 1 : 0,
-      category: categoryDoc,
-      tags,
       publishTime: status === 'publish' ? new Date() : existNews.publishTime,
     };
 
@@ -156,7 +144,7 @@ export class NewsService {
   async remove(id) {
     const existNews = await this.newssRepository.findOne(id);
     if (!existNews) {
-      throw new HttpException(`id为${id}的文章不存在`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(`id为${id}的新闻不存在`, HttpStatus.BAD_REQUEST);
     }
     return await this.newssRepository.remove(existNews);
   }

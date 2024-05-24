@@ -1,7 +1,5 @@
 import { AuthModule } from './../auth/auth.module';
 import { MDMiddleware } from './../core/middleware/md.middleware';
-import { TagModule } from './../tag/tag.module';
-import { CategoryModule } from './../category/category.module';
 import { NewsEntity } from './news.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import {
@@ -10,19 +8,14 @@ import {
   NestModule,
   RequestMethod,
 } from '@nestjs/common';
-// import { PostsController } from './posts.controller';
-// import { PostsService } from './posts.service';
+import { NewsController } from './news.controller';
+import { NewsService } from './news.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([NewsEntity]),
-    CategoryModule,
-    TagModule,
-    AuthModule,
-  ],
-  //   controllers: [PostsController],
-  //   providers: [PostsService],
-  //   exports: [PostsService],
+  imports: [TypeOrmModule.forFeature([NewsEntity]), AuthModule],
+  controllers: [NewsController],
+  providers: [NewsService],
+  exports: [NewsService],
 })
 export class NewsModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

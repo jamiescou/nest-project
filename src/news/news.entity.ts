@@ -55,6 +55,7 @@ export class NewsEntity {
     const responseObj: NewsInfoDto = {
       ...this,
     };
+    console.log('this==>>', this);
     if (this.author && this.author.id) {
       responseObj.author = this.author.nickname || this.author.username;
     }

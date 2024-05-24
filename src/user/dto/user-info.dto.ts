@@ -21,3 +21,8 @@ export class UserInfoDto {
   @ApiProperty({ description: '创建时间' })
   createTime: Date;
 }
+
+export interface UserListRo {
+  list: UserInfoDto[];
+  count: number;
+}

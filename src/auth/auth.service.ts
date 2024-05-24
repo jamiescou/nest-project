@@ -34,10 +34,17 @@ export class AuthService {
       role: user.role,
     });
 
-    return { token };
+    return {
+      token,
+      id: user.id,
+      username: user.username,
+      openid: user.openid || '',
+      avatarUrl: user.avatar || '',
+    };
   }
 
   async loginWithWechat(userInfo) {
+    console.log('loginWithWechat', userInfo);
     this.accessTokenInfo = null;
     if (!userInfo.code) {
       throw new BadRequestException('请输入微信授权码');
@@ -66,18 +73,18 @@ export class AuthService {
     return await this.userService.findByOpenid(this.accessTokenInfo.openid);
   }
   async getUserInfo() {
-    const result: AxiosResponse<WechatError & WechatUserInfo> =
-      await lastValueFrom(
-        this.httpService.get(
-          `${this.apiServer}/sns/userinfo?access_token=${this.accessTokenInfo.accessToken}&openid=${this.accessTokenInfo.openid}`,
-        ),
-      );
-    if (result.data.errcode) {
-      throw new BadRequestException(
-        `[getUserInfo] errcode:${result.data.errcode}, errmsg:${result.data.errmsg}`,
-      );
-    }
-    return result.data;
+    // const result: AxiosResponse<WechatError & WechatUserInfo> =
+    //   await lastValueFrom(
+    //     this.httpService.get(
+    //       `${this.apiServer}/sns/userinfo?access_token=${this.accessTokenInfo.accessToken}&openid=${this.accessTokenInfo.openid}`,
+    //     ),
+    //   );
+    // if (result.data.errcode) {
+    //   throw new BadRequestException(
+    //     `[getUserInfo] errcode:${result.data.errcode}, errmsg:${result.data.errmsg}`,
+    //   );
+    // }
+    // return result.data;
   }
 
   async getAccessToken(code) {
@@ -97,6 +104,7 @@ export class AuthService {
           `[getAccessToken] errcode:${res.data.errcode}, errmsg:${res.data.errmsg}`,
         );
       }
+      console.log('getAccessToken', res.data);
       this.accessTokenInfo = {
         sessionKey: res.data.session_key,
         expiresIn: res.data.expires_in,

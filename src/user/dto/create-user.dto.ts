@@ -12,4 +12,10 @@ export class CreateUserDto {
 
   @ApiProperty({ description: '用户角色' })
   role: string;
+
+  @ApiProperty({ description: '用户昵称' })
+  nickname: string;
+
+  @ApiProperty({ description: '用户头像' })
+  avatar: string;
 }
