@@ -29,7 +29,7 @@ export class DrawService {
       model: 'dall-e-3',
       prompt: prompt,
       n: 1,
-      size: '500x500',
+      size: '512x512',
     };
     const res: any = await axios({
       method: 'post',
