@@ -8,6 +8,8 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
+    "build:api": "pm2 start --name nest-api dist/src/main.js",
+    "build:app": "pm2 start --name nest-app dist/src/main.js",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "prod": "pm2 start --name draw-serve dist/src/main.js",
