@@ -21,7 +21,7 @@ async function bootstrap() {
   //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   //   credentials: true,
   // });
-  app.setGlobalPrefix('app'); // 全局路由前缀
+  app.setGlobalPrefix('api'); // 全局路由前缀
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new TransformInterceptor());
 
