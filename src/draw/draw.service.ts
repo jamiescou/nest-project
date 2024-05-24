@@ -31,7 +31,7 @@ export class DrawService {
       n: 1,
       size: '1024x1024',
     };
-    const res = await axios({
+    const res: any = await axios({
       method: 'post',
       url: 'https://burn.hair/v1/images/generations',
       data: params,
@@ -46,29 +46,8 @@ export class DrawService {
       msg: '操作成功',
       fileUrl: 'https://oss.chenmychou.cn/storage/download/' + downloadRes,
     };
-    console.log('resultresult', result, res.data.data);
     return result;
   }
-<<<<<<< HEAD
-  async getPictureById(id) {
-    const res: any = await axios({
-      method: 'get',
-      url: 'https://scribblediffusion.com/api/predictions/' + id,
-    });
-    console.log('getPictureById', res.data);
-    if (res.data.output && res.data.output.length === 2) {
-      const downloadRes = await this.download(res.data.output[1]);
-      res.data.fileUrl =
-        'https://oss.chenmychou.cn/storage/download/' + downloadRes;
-    }
-
-    else if (res.data.output && res.data.output.length === 1) {
-      const downloadRes = await this.download(res.data.output[0]);
-      res.data.fileUrl =
-        'https://oss.chenmychou.cn/storage/download/' + downloadRes;
-    }
-    return res.data;
-=======
   async getPictureById(url) {
     // const res: any = await axios({
     //   method: 'get',
@@ -87,7 +66,6 @@ export class DrawService {
     return {
       fileUrl: 'https://oss.chenmychou.cn/storage/download/' + downloadRes,
     };
->>>>>>> ae40f9c37db7335e52ca341cff482061660b2c49
   }
   async download(url: string) {
     const fileName =
