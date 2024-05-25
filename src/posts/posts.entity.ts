@@ -56,7 +56,9 @@ export class PostsEntity {
   status: string;
 
   // 作者
-  @ManyToOne((type) => User, (user) => user.nickname)
+  @ManyToOne((type) => User, (user) => user.nickname, {
+    createForeignKeyConstraints: false,
+  })
   author: User;
 
   //   @RelationId( (user:User) => user.posts)
@@ -65,7 +67,8 @@ export class PostsEntity {
   // 分类
   @Exclude()
   @ManyToOne(() => CategoryEntity, (category) => category.posts, {
-    // cascade: true,
+    // cascade: true
+    createForeignKeyConstraints: false,
   })
   @JoinColumn({
     name: 'category_id',
@@ -73,7 +76,9 @@ export class PostsEntity {
   category: CategoryEntity;
 
   // 标签
-  @ManyToMany(() => TagEntity, (tag) => tag.posts)
+  @ManyToMany(() => TagEntity, (tag) => tag.posts, {
+    createForeignKeyConstraints: false,
+  })
   @JoinTable({
     name: 'post_tag',
     joinColumns: [{ name: 'post_id' }],
@@ -109,10 +114,10 @@ export class PostsEntity {
     if (this.tags && this.tags.length) {
       responseObj.tags = this.tags.map((item) => item.name);
     }
-    if (this.author && this.author.id) {
-      responseObj.userId = this.author.id;
-      responseObj.author = this.author.nickname || this.author.username;
-    }
+    // if (this.author && this.author.id) {
+    //   responseObj.userId = this.author.id;
+    //   responseObj.author = this.author.nickname || this.author.username;
+    // }
     return responseObj;
   }
 }

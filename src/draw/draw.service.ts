@@ -5,6 +5,7 @@ import fs, { createWriteStream } from 'fs';
 import * as path from 'path';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const moment = require('moment');
+import * as Jimp from 'jimp';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DrawEntity } from './entities/draw.entity';
@@ -26,7 +27,7 @@ export class DrawService {
     private readonly drawRepository: Repository<DrawEntity>,
     private readonly httpService: HttpService,
   ) { }
-  changeAiKey(aiKeyId){
+  changeAiKey(aiKeyId) {
     console.log('changeAiKeychangeAiKey', aiKeys, aiKeyId)
     Authorization = `Bearer ${aiKeys.keys[aiKeyId].key}`;
     return {
@@ -34,6 +35,33 @@ export class DrawService {
       label: aiKeys.keys[aiKeyId].label,
     }
   }
+  async processNetworkImage(url: string, outputFilePath: string): Promise<void> {
+    try {
+      const image = await Jimp.read(url);
+      console.log('processNetworkImageprocessNetworkImage', image)
+      await image
+        .resize(256, 256) // 调整图像大小
+        .quality(60) // 设置图像质量
+        .writeAsync(outputFilePath); // 保存图像
+    } catch (error) {
+      console.error('Error processing network image:', error);
+      throw error;
+    }
+  }
+
+  async addWatermark(filePath: string, outputFilePath: string, text: string): Promise<void> {
+    const image = await Jimp.read(filePath);
+    const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
+    await image
+      .print(font, 10, 10, text) // 在 (10, 10) 位置添加文字
+      .writeAsync(outputFilePath);
+  }
+
+  // async saveImage(file: Express.Multer.File): Promise<string> {
+  //   const outputFilePath = path.join(__dirname, '..', 'uploads', `compressed-${file.originalname}`);
+  //   await this.compressImage(file.path, outputFilePath);
+  //   return outputFilePath;
+  // }
   async predictImage(prompt, image) {
     const params: any = {
       model: 'dall-e-3',
@@ -50,15 +78,23 @@ export class DrawService {
           Authorization,
         },
       });
-      console.log('AuthorizationAuthorization', Authorization)
-      const downloadRes = await this.download(res.data.data[0].url);
+    console.log('AuthorizationAuthorization', Authorization)
+    // const downloadRes: any = await this.download(res.data.data[0].url);
+      const fileName =
+        moment().format('YYYYMMDDhhmmss') +
+        Math.floor(Math.random() * 10000) +
+        '.png';
+      let imageData = await this.processNetworkImage(
+        res.data.data[0].url,
+        path.join(__dirname, '../../../public/download/', fileName))
       const result = {
         code: 200,
         msg: '操作成功',
-        fileUrl: 'https://oss.chenmychou.cn/storage/download/' + downloadRes,
+        fileUrl: 'https://oss.chenmychou.cn/storage/download/' + fileName,
       };
       return result;
     } catch (error) {
+      console.log(error.response);
       console.log(error.response.data);
       return {
         msg: '操作失败',

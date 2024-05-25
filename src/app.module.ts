@@ -22,10 +22,13 @@ import { CardModule } from './card/card.module';
       useFactory: async (configService: ConfigService) => ({
         type: 'mysql',
         host: configService.get('DB_HOST', '47.116.77.217'),
+        // host: configService.get('DB_HOST', 'localhost'),
         port: configService.get<number>('DB_PORT', 3306),
         username: configService.get('DB_USER', 'root'),
         password: configService.get('DB_PASSWORD', 'Xtaier123!'),
+        // password: configService.get('DB_PASSWORD', 'Zou895849097!'),
         database: configService.get('DB_DATABASE', 'nestblog'),
+        
         // charset: 'utf8mb4',
         timezone: '+08:00',
         synchronize: true,
