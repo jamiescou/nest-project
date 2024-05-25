@@ -38,10 +38,12 @@ export class DrawService {
   async processNetworkImage(url: string, outputFilePath: string): Promise<void> {
     try {
       const image = await Jimp.read(url);
+      const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
       console.log('processNetworkImageprocessNetworkImage', image)
       await image
         .resize(256, 256) // 调整图像大小
         .quality(60) // 设置图像质量
+        .print(font, 10, 10, '神笔之马良') // 在 (10, 10) 位置添加文字
         .writeAsync(outputFilePath); // 保存图像
     } catch (error) {
       console.error('Error processing network image:', error);
