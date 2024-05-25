@@ -8,11 +8,13 @@ const moment = require('moment');
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DrawEntity } from './entities/draw.entity';
+import aiKeys from './data/key';
 import {
   CreateDrawDto,
   DrawRecordRo,
   DrawRecordInfoDto,
 } from './dto/create-draw.dto';
+let Authorization = `Bearer ${aiKeys.keys[0].key}`;
 
 @Injectable()
 export class DrawService {
@@ -23,7 +25,15 @@ export class DrawService {
     @InjectRepository(DrawEntity)
     private readonly drawRepository: Repository<DrawEntity>,
     private readonly httpService: HttpService,
-  ) {}
+  ) { }
+  changeAiKey(aiKeyId){
+    console.log('changeAiKeychangeAiKey', aiKeys, aiKeyId)
+    Authorization = `Bearer ${aiKeys.keys[aiKeyId].key}`;
+    return {
+      keyName: aiKeys.keys[aiKeyId].name,
+      label: aiKeys.keys[aiKeyId].label,
+    }
+  }
   async predictImage(prompt, image) {
     const params: any = {
       model: 'dall-e-3',
@@ -37,10 +47,10 @@ export class DrawService {
         url: 'https://burn.hair/v1/images/generations',
         data: params,
         headers: {
-          Authorization:
-            'Bearer sk-SfpXrt18VoL5MCId279f52Fa7e6c47219f290fC19d4c04E7',
+          Authorization,
         },
       });
+      console.log('AuthorizationAuthorization', Authorization)
       const downloadRes = await this.download(res.data.data[0].url);
       const result = {
         code: 200,
@@ -56,20 +66,7 @@ export class DrawService {
     }
   }
   async getPictureById(url) {
-    // const res: any = await axios({
-    //   method: 'get',
-    //   url: url,
-    // });
     const downloadRes = await this.download(url);
-    // if (res.data.output && res.data.output.length === 2) {
-    //   const downloadRes = await this.download(res.data.output[1]);
-    //   res.data.fileUrl =
-    //     'https://oss.chenmychou.cn/storage/download/' + downloadRes;
-    // } else if (res.data.output && res.data.output.length === 1) {
-    //   const downloadRes = await this.download(res.data.output[0]);
-    //   res.data.fileUrl =
-    //     'https://oss.chenmychou.cn/storage/download/' + downloadRes;
-    // }
     return {
       fileUrl: 'https://oss.chenmychou.cn/storage/download/' + downloadRes,
     };

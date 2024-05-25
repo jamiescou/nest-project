@@ -30,6 +30,11 @@ export class DrawController {
     const { prompt, image } = body;
     return this.drawService.predictImage(prompt, image);
   }
+  @ApiOperation({ summary: '切换key' })
+  @Get('/changeAiKey/:id')
+  changeAiKey(@Param('id') id: string) {
+    return this.drawService.changeAiKey(id);
+  }
 
   @ApiOperation({ summary: '获取对应的图片' })
   @ApiBearerAuth()
@@ -60,12 +65,6 @@ export class DrawController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   async getAllRecordList(
     @Query() query,
-    // @Query('pageSize') pageSize: number,
-    // @Query('pageNum') pageNum: number,
-    // @Query('type') type: number,
-    // @Query('userId') userId: string,
-    // @Query('startTime') startTime: Date,
-    // @Query('endTime') endTime: Date,
     @Headers() header,
   ): Promise<DrawRecordRo> {
     return await this.drawService.findAll(query);
