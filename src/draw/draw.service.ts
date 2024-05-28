@@ -26,20 +26,23 @@ export class DrawService {
     @InjectRepository(DrawEntity)
     private readonly drawRepository: Repository<DrawEntity>,
     private readonly httpService: HttpService,
-  ) { }
+  ) {}
   changeAiKey(aiKeyId) {
-    console.log('changeAiKeychangeAiKey', aiKeys, aiKeyId)
+    console.log('changeAiKeychangeAiKey', aiKeys, aiKeyId);
     Authorization = `Bearer ${aiKeys.keys[aiKeyId].key}`;
     return {
       keyName: aiKeys.keys[aiKeyId].name,
       label: aiKeys.keys[aiKeyId].label,
-    }
+    };
   }
-  async processNetworkImage(url: string, outputFilePath: string): Promise<void> {
+  async processNetworkImage(
+    url: string,
+    outputFilePath: string,
+  ): Promise<void> {
     try {
       const image = await Jimp.read(url);
       const font = await Jimp.loadFont(Jimp.FONT_SANS_8_WHITE);
-      console.log('processNetworkImageprocessNetworkImage', image)
+      console.log('processNetworkImageprocessNetworkImage', image);
       await image
         .resize(300, 300) // 调整图像大小
         .quality(80) // 设置图像质量
@@ -51,7 +54,11 @@ export class DrawService {
     }
   }
 
-  async addWatermark(filePath: string, outputFilePath: string, text: string): Promise<void> {
+  async addWatermark(
+    filePath: string,
+    outputFilePath: string,
+    text: string,
+  ): Promise<void> {
     const image = await Jimp.read(filePath);
     const font = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
     await image
@@ -80,26 +87,36 @@ export class DrawService {
           Authorization,
         },
       });
-    console.log('AuthorizationAuthorization', Authorization)
-    // const downloadRes: any = await this.download(res.data.data[0].url);
+      console.log('AuthorizationAuthorization', Authorization);
+      // const downloadRes: any = await this.download(res.data.data[0].url);
       const fileName =
         moment().format('YYYYMMDDhhmmss') +
         Math.floor(Math.random() * 10000) +
         '.png';
-      let imageData = await this.processNetworkImage(
+      const imageData = await this.processNetworkImage(
         res.data.data[0].url,
-        path.join(__dirname, '../../../public/download/', fileName))
+        path.join(__dirname, '../../../public/download/', fileName),
+      );
       const result = {
         code: 200,
         msg: '操作成功',
+        originUrl: res.data.data[0].url,
         fileUrl: 'https://oss.chenmychou.cn/storage/download/' + fileName,
       };
       return result;
     } catch (error) {
       console.log(error.response);
       console.log(error.response.data);
+      // if (error.response.data.error === 'content_policy_violation') {
+      //   return {
+      //     code: 400,
+      //     msg: '输入内容违规',
+      //     data: error.response.data.error,
+      //   };
+      // }
       return {
-        msg: '操作失败',
+        msg: '输入内容违规',
+        error: error.response.data.error,
       };
     }
   }
