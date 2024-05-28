@@ -20,23 +20,24 @@ import { CardModule } from './card/card.module';
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
-        console.log('configService',envConfig, configService.get('DB_HOST'));
-        return ({
-        type: 'mysql',
-        host: configService.get('DB_HOST', '47.116.77.217'),
-        // host: configService.get('DB_HOST', 'localhost'),
-        port: configService.get<number>('DB_PORT', 3306),
-        username: configService.get('DB_USER', 'root'),
-        password: configService.get('DB_PASSWORD', 'Xtaier123!'),
-        // password: configService.get('DB_PASSWORD', 'Zou895849097!'),
-        database: configService.get('DB_DATABASE', 'nestblog'),
-        // database: configService.get('DB_DATABASE', 'drawtab'),
-        
-        // charset: 'utf8mb4',
-        timezone: '+08:00',
-        synchronize: false,
-        autoLoadEntities: true,
-      })},
+        console.log('configService', envConfig, configService.get('DB_HOST'));
+        return {
+          type: 'mysql',
+          host: configService.get('DB_HOST', '47.116.77.217'),
+          // host: configService.get('DB_HOST', 'localhost'),
+          port: configService.get<number>('DB_PORT', 3306),
+          username: configService.get('DB_USER', 'root'),
+          password: configService.get('DB_PASSWORD', 'Xtaier123!'),
+          // password: configService.get('DB_PASSWORD', 'Zou895849097!'),
+          database: configService.get('DB_DATABASE', 'nestblog'),
+          // database: configService.get('DB_DATABASE', 'drawtab'),
+
+          // charset: 'utf8mb4',
+          timezone: '+08:00',
+          synchronize: false,
+          autoLoadEntities: true,
+        };
+      },
     }),
     PostsModule,
     UserModule,
