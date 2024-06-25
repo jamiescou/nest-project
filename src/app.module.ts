@@ -13,6 +13,8 @@ import { TagModule } from './tag/tag.module';
 import { DrawModule } from './draw/draw.module';
 import { NewsModule } from './news/news.module';
 import { CardModule } from './card/card.module';
+import { ProxyService } from './proxy/proxy.service';
+import { ProxyController } from './proxy/proxy.controller';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: [envConfig.path] }),
@@ -49,7 +51,7 @@ import { CardModule } from './card/card.module';
     NewsModule,
     CardModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, ProxyController],
+  providers: [AppService, ProxyService],
 })
 export class AppModule {}

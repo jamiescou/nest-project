@@ -3,8 +3,11 @@ import axios, { AxiosResponse } from 'axios';
 import { Injectable } from '@nestjs/common';
 import fs, { createWriteStream } from 'fs';
 import * as path from 'path';
+import * as FormData from 'form-data';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const moment = require('moment');
+/* eslint-disable @typescript-eslint/no-var-requires */
+const { SocksProxyAgent } = require('socks-proxy-agent');
 import * as Jimp from 'jimp';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -223,5 +226,38 @@ export class DrawService {
       item.toResponseObject(),
     );
     return { list: result, count: count };
+  }
+  async removeWatermark(file: Express.Multer.File): Promise<any> {
+    const proxyUrl = `socks5://127.0.0.1:7890`;
+    const agent = new SocksProxyAgent(proxyUrl);
+    const formData = new FormData();
+    formData.append('original_preview_image', file.buffer, {
+      filename: file.originalname,
+      contentType: file.mimetype,
+    });
+    formData.append('zoom_factor', '2');
+
+    try {
+      console.log('removeWatermark==', file, formData);
+      const url =
+        'https://api.dewatermark.ai/api/object_removal/v5/erase_watermark';
+      const res: any = await axios.post(url, formData, {
+        httpAgent: agent,
+        httpsAgent: agent,
+        timeout: 10000, // 设置超时为10秒
+        headers: {
+          ...formData.getHeaders(), // 使用 FormData 自动生成的 headers
+          Authorization:
+            'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJpZ25vcmUiLCJwbGF0Zm9ybSI6IndlYiIsImlzX3BybyI6ZmFsc2UsImV4cCI6MTcxOTI4NDI3NX0.mpP9GKtU92vXZXdZx-ATXzptGty9l_mkehMLsEIdO9A',
+        },
+      });
+      console.log('res.data====', res.data);
+      const imageBuffer = Buffer.from(res.data.edited_image.image, 'base64');
+      console.log('imageBufferimageBuffer', imageBuffer);
+      return imageBuffer;
+    } catch (err) {
+      console.log('======err===', err);
+      throw err;
+    }
   }
 }

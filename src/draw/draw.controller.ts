@@ -1,5 +1,11 @@
 import { DrawService } from './draw.service';
-import { ApiOperation, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiOperation,
+  ApiTags,
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiBody,
+} from '@nestjs/swagger';
 import {
   Body,
   Controller,
@@ -8,13 +14,37 @@ import {
   Param,
   Headers,
   Query,
+  UseInterceptors,
+  UploadedFile,
+  StreamableFile,
   UseGuards,
+  Res,
 } from '@nestjs/common';
+import * as fs from 'fs';
+import { mkdir } from 'fs/promises';
+import { join } from 'path';
+import { Response } from 'express'; // 确保从 express 导入
 import { CreateDrawDto, DrawRecordRo } from './dto/create-draw.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard, Roles } from '../auth/role.guard';
-// import { CreateTagDto } from './dto/create-tag.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
+// import { CreateTagDto } from './dto/create-tag.dto';
+export const ApiFile =
+  (fileName = 'file'): MethodDecorator =>
+  (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
+    ApiBody({
+      schema: {
+        type: 'object',
+        properties: {
+          [fileName]: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+      },
+    })(target, propertyKey, descriptor);
+  };
 @ApiTags('AI画图')
 @Controller('draw')
 export class DrawController {
@@ -83,5 +113,58 @@ export class DrawController {
     const userId = header.userid;
     console.log('header========>', header, query);
     return await this.drawService.getRecordList(query, userId);
+  }
+  @ApiOperation({ summary: '去掉水印接口' })
+  @ApiBearerAuth()
+  @Post('/removeWatermark')
+  // @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @ApiConsumes('multipart/form-data')
+  @ApiFile()
+  @UseInterceptors(FileInterceptor('file'))
+  async removeWatermark(
+    @UploadedFile('file') file: Express.Multer.File,
+    @Res() res: Response,
+  ) {
+    try {
+      console.log('Received file:', file);
+      const imageBuffer = await this.drawService.removeWatermark(file);
+      console.log('Processed image buffer type:', typeof imageBuffer);
+      console.log('Processed image buffer length:', imageBuffer.length);
+
+      const tempDir = join(__dirname, 'temp');
+      const filePath = join(tempDir, file.originalname);
+      console.log('Temporary file path:', filePath);
+
+      await mkdir(tempDir, { recursive: true });
+      console.log('Temporary directory ensured');
+
+      await fs.promises.writeFile(filePath, imageBuffer, 'binary');
+      console.log('File written to temporary path');
+
+      try {
+        await fs.promises.access(filePath);
+        console.log('File exists after writing');
+      } catch (accessError) {
+        console.error('File does not exist after writing:', accessError);
+        throw accessError;
+      }
+
+      const fileStream = fs.createReadStream(filePath);
+      fileStream.on('error', (error) => {
+        console.error('Error reading file:', error);
+        res.status(500).send('Error reading file');
+      });
+
+      res.set({
+        'Content-Type': 'image/jpeg',
+        'Content-Disposition': `attachment; filename="${file.originalname}"`,
+      });
+
+      console.log('Starting to pipe file stream to response');
+      fileStream.pipe(res);
+    } catch (err) {
+      console.error('Error in removeWatermark:', err);
+      res.status(500).send('Error removing watermark');
+    }
   }
 }
