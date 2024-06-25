@@ -242,8 +242,8 @@ export class DrawService {
       const url =
         'https://api.dewatermark.ai/api/object_removal/v5/erase_watermark';
       const res: any = await axios.post(url, formData, {
-        httpAgent: agent,
-        httpsAgent: agent,
+        // httpAgent: agent,
+        // httpsAgent: agent,
         timeout: 10000, // 设置超时为10秒
         headers: {
           ...formData.getHeaders(), // 使用 FormData 自动生成的 headers
