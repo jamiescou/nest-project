@@ -227,7 +227,7 @@ export class DrawService {
     );
     return { list: result, count: count };
   }
-  async removeWatermark(file: Express.Multer.File): Promise<any> {
+  async removeWatermark(file: Express.Multer.File, type: string): Promise<any> {
     const proxyUrl = `socks5://127.0.0.1:7890`;
     const agent = new SocksProxyAgent(proxyUrl);
     const formData = new FormData();
@@ -236,14 +236,19 @@ export class DrawService {
       contentType: file.mimetype,
     });
     formData.append('zoom_factor', '2');
-
+    let proxyParms = {};
+    if (type == '1') {
+      proxyParms = {
+        httpAgent: agent,
+        httpsAgent: agent,
+      };
+    }
     try {
-      console.log('removeWatermark==', file, formData);
+      console.log('removeWatermark==', file, formData, type);
       const url =
         'https://api.dewatermark.ai/api/object_removal/v5/erase_watermark';
       const res: any = await axios.post(url, formData, {
-        // httpAgent: agent,
-        // httpsAgent: agent,
+        ...proxyParms,
         timeout: 10000, // 设置超时为10秒
         headers: {
           ...formData.getHeaders(), // 使用 FormData 自动生成的 headers

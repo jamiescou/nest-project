@@ -122,12 +122,13 @@ export class DrawController {
   @ApiFile()
   @UseInterceptors(FileInterceptor('file'))
   async removeWatermark(
+    @Query('type') type: string,
     @UploadedFile('file') file: Express.Multer.File,
     @Res() res: Response,
   ) {
     try {
-      console.log('Received file:', file);
-      const imageBuffer = await this.drawService.removeWatermark(file);
+      console.log('Received file:', file, type);
+      const imageBuffer = await this.drawService.removeWatermark(file, type);
       console.log('Processed image buffer type:', typeof imageBuffer);
       console.log('Processed image buffer length:', imageBuffer.length);
 
