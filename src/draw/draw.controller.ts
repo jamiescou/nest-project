@@ -117,7 +117,7 @@ export class DrawController {
   @ApiOperation({ summary: '去掉水印接口' })
   @ApiBearerAuth()
   @Post('/removeWatermark')
-  // @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
   @ApiConsumes('multipart/form-data')
   @ApiFile()
   @UseInterceptors(FileInterceptor('file'))

@@ -38,6 +38,8 @@ export class AuthService {
       token,
       id: user.id,
       username: user.username,
+      nickname: user.nickname,
+      role: user.role,
       openid: user.openid || '',
       avatarUrl: user.avatar || '',
     };
