@@ -149,13 +149,11 @@ export class DrawController {
         console.error('File does not exist after writing:', accessError);
         throw accessError;
       }
-
       const fileStream = fs.createReadStream(filePath);
       fileStream.on('error', (error) => {
         console.error('Error reading file:', error);
         res.status(500).send('Error reading file');
       });
-
       res.set({
         'Content-Type': 'image/jpeg',
         'Content-Disposition': `attachment; filename="${file.originalname}"`,

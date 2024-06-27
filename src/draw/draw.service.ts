@@ -7,7 +7,8 @@ import * as FormData from 'form-data';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const moment = require('moment');
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { SocksProxyAgent } = require('socks-proxy-agent');
+const { HttpProxyAgent } = require('http-proxy-agent');
+
 import * as Jimp from 'jimp';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -228,8 +229,8 @@ export class DrawService {
     return { list: result, count: count };
   }
   async removeWatermark(file: Express.Multer.File, type: string): Promise<any> {
-    const proxyUrl = `socks5://127.0.0.1:7890`;
-    const agent = new SocksProxyAgent(proxyUrl);
+    const proxyUrl = `socks5://127.0.0.1:7891`;
+    const agent = new HttpProxyAgent(proxyUrl);
     const formData = new FormData();
     formData.append('original_preview_image', file.buffer, {
       filename: file.originalname,
