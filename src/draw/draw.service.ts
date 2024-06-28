@@ -249,7 +249,7 @@ export class DrawService {
         'https://api.dewatermark.ai/api/object_removal/v5/erase_watermark';
       const res: any = await axios.post(url, formData, {
         ...proxyParms,
-        timeout: 10000, // 设置超时为10秒
+        timeout: 60000, // 设置超时为60秒
         headers: {
           ...formData.getHeaders(), // 使用 FormData 自动生成的 headers
           Authorization:
