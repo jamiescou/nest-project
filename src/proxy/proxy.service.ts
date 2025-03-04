@@ -3,6 +3,11 @@ import { Injectable, HttpService } from '@nestjs/common';
 import axios from 'axios';
 // import * as yaml from 'js-yaml';
 const { SocksProxyAgent } = require('socks-proxy-agent');
+interface ChatMessage {
+  model: string;
+  stream: boolean;
+  messages: { role: string; content: string }[];
+}
 @Injectable()
 export class ProxyService {
   private readonly httpService: HttpService;
@@ -35,5 +40,20 @@ export class ProxyService {
         `Failed to make request through Shadowsocks: ${error.message}`,
       );
     }
+  }
+  async getChatMessage(body: ChatMessage) {
+    console.log('body==>', body);
+    // 调用deepseek-r1:1.5b模型
+    const model = 'deepseek-r1:1.5b';
+    const stream = false;
+    const messages = body.messages;
+    const url = `https://deepseek.zouzhengming.com/api/chat`;
+    const response = await axios.post(url, {
+      model,
+      stream,
+      messages,
+    });
+    console.log('response==>', response.data);
+    return response.data;
   }
 }
