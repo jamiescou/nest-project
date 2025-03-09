@@ -44,8 +44,8 @@ export class ProxyService {
   async getChatMessage(body: ChatMessage) {
     console.log('body==>', body);
     // 调用deepseek-r1:1.5b模型
-    const model = 'deepseek-r1:1.5b';
-    const stream = false;
+    const model = body.model;
+    const stream = body.stream;
     const messages = body.messages;
     const url = `https://deepseek.zouzhengming.com/api/chat`;
     const response = await axios.post(url, {
